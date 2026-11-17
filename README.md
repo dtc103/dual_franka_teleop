@@ -44,8 +44,7 @@ required. This project provides its own namespaced bringup using those installed
 packages. `requirements.txt` lists Python dependencies if rebuilding an environment;
 ROS and `franka_msgs` still come from the robot workspace. The existing
 workspace is based on [lvjonok/pixi_panda_ros2](https://github.com/lvjonok/pixi_panda_ros2);
-a fresh machine must install/build that compatible driver environment and apply
-the broadcaster fix described below. `requirements.txt` alone does not install
+a fresh machine must install/build that compatible driver environment. `requirements.txt` alone does not install
 ROS or the Franka hardware driver.
 
 Use the RT kernel and the realtime user permissions already configured for the
@@ -230,27 +229,6 @@ can distinguish left/right pauses and gripper actions. The single-arm LeRobot
 exporter in the other repository does **not** support this dual-arm schema yet;
 these are raw recordings, not a ready-made bimanual LeRobot dataset.
 
-## Code map
-
-- `dual_franka/control/panda.py`: unchanged standalone Panda IK/planner core.
-- `control/mapping.py`: established relative mapping, extended with a hand choice.
-- `control/arm.py`: one robot's ROS endpoints, state, mapping and planning.
-- `control/gripper.py`: asynchronous trigger-toggle gripper actions.
-- `control/reset.py`, `reset_sequence.py`: taught reset execution and interpolation.
-- `session.py`: shared episode lifecycle and paired reset coordinator.
-- `runtime.py`: shared control worker, fault handling and recording clock.
-- `capture/`: background cameras and lossless recording.
-- `quest/`: WebXR relay, browser assets and USB setup.
-- `ui/`: Qt environment handling and desktop widgets.
-- `driver.py`: namespaced driver launch, no application/GUI dependency.
-- `config.py`: robot identities, file paths and settings validation.
-
-Control primitives, recorder and WebXR transport were copied from the working
-single-arm project and adapted here. There are no runtime imports from that
-repository. No assertions are used in implementation code. Errors at hardware,
-file and network boundaries are retained so faults cannot silently become
-successful recordings.
-
 ## Offline verification
 
 ```bash
@@ -269,31 +247,6 @@ Fake hardware is a bringup check, not a physical dynamics simulation. It lacks
 the real Franka state interfaces; running the collector against it additionally
 needs a synthetic state source. Unit tests and development smoke tests use
 synthetic states without sending motion commands to either physical Panda.
-
-### Broadcaster compatibility fix
-
-The installed Panda state broadcaster used to return a controller error when
-its asynchronous publishing lock was briefly busy. Both state broadcasters could
-therefore deactivate despite healthy robot connections. The driver workspace
-source was patched to skip that publication and retain real state-read errors.
-The patch is saved in `patches/franka_state_nonblocking.patch` and the package
-was rebuilt. Telemetry is now 100 Hz; low-level arm control remains 1000 Hz.
-Restart the driver processes after updating this library. A fresh installation
-of the driver workspace needs the same source patch and package rebuild.
-
-### Robot faults and reconnecting
-
-`robot mode=4` is Franka's Reflex mode, including when `current_errors` is empty.
-The UI reports both current and last-motion errors. Restore readiness in Franka
-Desk, then use **Reconnect robots** once the previous control worker has finished.
-Reconnection starts a fresh control worker and requires setting references again;
-it never calls automatic recovery, switches controllers, or resumes an old target.
-If the driver/controller itself stopped, restart the driver first.
-
-After a fault, the window stays responsive: session fields remain editable,
-recording/movement controls are disabled, and Reconnect/Close remain available.
-Standalone `teleoperate.py` hides session/episode controls entirely. Closing the
-window stops control and closes automatically after the worker finishes flushing.
 
 ### Edit force/torque collision thresholds by robot IP
 
