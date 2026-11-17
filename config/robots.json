@@ -1,0 +1,42 @@
+{
+  "arms": {
+    "left": {
+      "ip": "172.16.0.2",
+      "namespace": "left",
+      "yaw_deg": 0,
+      "reset_sequence": null
+    },
+    "right": {
+      "ip": "172.16.0.3",
+      "namespace": "right",
+      "yaw_deg": 0,
+      "reset_sequence": null
+    }
+  },
+  "control": {
+    "scale": 1.0,
+    "precision_scale": 0.5,
+    "frame_alignment": "world",
+    "max_speed": 10.0,
+    "max_angular_speed": 10.0,
+    "joint_speed": 2.0,
+    "joint_acceleration": 5.0,
+    "joint_jerk": 50.0,
+    "trajectory_horizon": 0.35,
+    "smoothing_seconds": 0.05,
+    "workspace_radius": 1.0,
+    "stale_seconds": 0.25,
+    "gripper_speed": 0.1,
+    "grasp_force": 20.0,
+    "reset_speed": 0.25,
+    "disable_reset_path_tolerance": false
+  },
+  "cameras": {
+    "wrist_left": "130322272081",
+    "side": "130322271876",
+    "opposite": "130322271346"
+  },
+  "camera_width": 1280,
+  "camera_height": 720,
+  "camera_fps": 30
+}

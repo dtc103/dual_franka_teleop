@@ -1,0 +1,43 @@
+--- a/src/franka_robot_state_broadcaster/src/franka_robot_state_broadcaster.cpp
++++ b/src/franka_robot_state_broadcaster/src/franka_robot_state_broadcaster.cpp
+@@ -91,22 +91,26 @@
+   if(time.nanoseconds() - last_pub_.nanoseconds() < 1'000'000'000 / frequency){
+     return controller_interface::return_type::OK;
+   }
+-  if (realtime_franka_state_publisher && realtime_franka_state_publisher->trylock()) {
+-    realtime_franka_state_publisher->msg_.header.stamp = time;
+-
+-    if (!franka_robot_state->get_values_as_message(realtime_franka_state_publisher->msg_)) {
+-      RCLCPP_ERROR(get_node()->get_logger(),
+-                   "Failed to get franka state via franka state interface.");
+-      realtime_franka_state_publisher->unlock();
+-      return controller_interface::return_type::ERROR;
+-    }
+-    realtime_franka_state_publisher->unlockAndPublish();
+-    last_pub_ = get_node()->now();
+-    return controller_interface::return_type::OK;
+-
+-  } else {
++  if (!realtime_franka_state_publisher) {
+     return controller_interface::return_type::ERROR;
+   }
++  // Publishing runs on another thread. A busy lock drops one telemetry sample;
++  // it does not mean the robot state interface or controller has failed.
++  if (!realtime_franka_state_publisher->trylock()) {
++    return controller_interface::return_type::OK;
++  }
++  realtime_franka_state_publisher->msg_.header.stamp = time;
++
++  if (!franka_robot_state->get_values_as_message(realtime_franka_state_publisher->msg_)) {
++    RCLCPP_ERROR(get_node()->get_logger(),
++                 "Failed to get franka state via franka state interface.");
++    realtime_franka_state_publisher->unlock();
++    return controller_interface::return_type::ERROR;
++  }
++  realtime_franka_state_publisher->unlockAndPublish();
++  last_pub_ = get_node()->now();
++  return controller_interface::return_type::OK;
++
+ }
+ 
+ } // namespace franka_state_broadcaster

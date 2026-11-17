@@ -1,0 +1,10 @@
+# ROS/rclpy and franka_msgs come from the existing Pixi Jazzy workspace.
+numpy>=1.26
+scipy>=1.11
+pin-pink
+qpsolvers
+quadprog
+PySide6>=6.6
+pyrealsense2
+opencv-python-headless>=4.10
+PyYAML
