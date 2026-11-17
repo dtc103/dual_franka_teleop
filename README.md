@@ -24,10 +24,12 @@ Camera roles apply to demonstration collection. Standalone teleoperation does no
 ## Repository checkout
 
 ```bash
-git clone https://github.com/dtc103/dual_franka_teleop.git ~/dev/dual_franka_teleoperation
+cd ~/dev
+git clone https://github.com/dtc103/dual_franka_teleop.git
+cd dual_franka_teleop
 ```
 
-The checkout name above preserves the paths used in the commands below. The
+The commands below use the default checkout folder, `~/dev/dual_franka_teleop`. The
 Python entry points also work from another checkout location using its actual
 path. This repository contains the dual-robot application, controller, Quest
 web client, collection tools, tests, Linux USB rule and driver compatibility
@@ -55,7 +57,7 @@ Read-only diagnostics:
 
 ```bash
 cd ~/install/pixi_panda_ros2
-pixi run -e jazzy python ~/dev/dual_franka_teleoperation/check_setup.py
+pixi run -e jazzy python ~/dev/dual_franka_teleop/check_setup.py
 ```
 
 ## 1. Teach reset paths once
@@ -69,7 +71,7 @@ is loaded:
 
 ```bash
 cd ~/install/pixi_panda_ros2
-pixi run -e jazzy python ~/dev/dual_franka_teleoperation/start_robots.py \
+pixi run -e jazzy python ~/dev/dual_franka_teleop/start_robots.py \
   --execute --state-only
 ```
 
@@ -77,7 +79,7 @@ In another terminal:
 
 ```bash
 cd ~/install/pixi_panda_ros2
-pixi run -e jazzy python ~/dev/dual_franka_teleoperation/teach_reset.py
+pixi run -e jazzy python ~/dev/dual_franka_teleop/teach_reset.py
 ```
 
 Use native hand-guiding. Position both arms, release the guiding controls and
@@ -95,7 +97,7 @@ Stop the state-only driver with Ctrl+C when teaching is finished.
 
 ```bash
 cd ~/install/pixi_panda_ros2
-pixi run -e jazzy python ~/dev/dual_franka_teleoperation/start_robots.py --execute
+pixi run -e jazzy python ~/dev/dual_franka_teleop/start_robots.py --execute
 ```
 
 The launch starts `/left/controller_manager` and `/right/controller_manager` at
@@ -113,7 +115,7 @@ In another terminal:
 
 ```bash
 cd ~/install/pixi_panda_ros2
-pixi run -e jazzy python ~/dev/dual_franka_teleoperation/run_collection.py \
+pixi run -e jazzy python ~/dev/dual_franka_teleop/run_collection.py \
   --port 8444 --execute
 ```
 
@@ -161,7 +163,7 @@ No session name, camera captures or reset sequences are required:
 
 ```bash
 cd ~/install/pixi_panda_ros2
-pixi run -e jazzy python ~/dev/dual_franka_teleoperation/teleoperate.py \
+pixi run -e jazzy python ~/dev/dual_franka_teleop/teleoperate.py \
   --port 8444 --execute
 ```
 
@@ -234,13 +236,13 @@ these are raw recordings, not a ready-made bimanual LeRobot dataset.
 ```bash
 cd ~/install/pixi_panda_ros2
 pixi run -e jazzy bash -c \
-  'cd ~/dev/dual_franka_teleoperation && python -m unittest discover -s tests -v'
+  'cd ~/dev/dual_franka_teleop && python -m unittest discover -s tests -v'
 ```
 
 To check namespace/configuration loading without connecting to either robot:
 
 ```bash
-pixi run -e jazzy python ~/dev/dual_franka_teleoperation/start_robots.py --fake
+pixi run -e jazzy python ~/dev/dual_franka_teleop/start_robots.py --fake
 ```
 
 Fake hardware is a bringup check, not a physical dynamics simulation. It lacks
@@ -254,9 +256,9 @@ Keep both drivers running and stop teleoperation first:
 
 ```bash
 cd ~/install/pixi_panda_ros2
-pixi run -e jazzy python ~/dev/dual_franka_teleoperation/configure_collision.py --robot-ip 172.16.0.2
+pixi run -e jazzy python ~/dev/dual_franka_teleop/configure_collision.py --robot-ip 172.16.0.2
 # Or the other arm:
-pixi run -e jazzy python ~/dev/dual_franka_teleoperation/configure_collision.py --robot-ip 172.16.0.3
+pixi run -e jazzy python ~/dev/dual_franka_teleop/configure_collision.py --robot-ip 172.16.0.3
 ```
 
 The editor selects the matching ROS namespace from `config/robots.json`, checks
@@ -280,7 +282,7 @@ and verified recovery tests.
 One-time Linux USB permissions fix (needed on this PC for Quest USB mode 5013):
 
 ```bash
-sudo install -m 644 ~/dev/dual_franka_teleoperation/setup/51-meta-quest.rules /etc/udev/rules.d/51-meta-quest.rules
+sudo install -m 644 ~/dev/dual_franka_teleop/setup/51-meta-quest.rules /etc/udev/rules.d/51-meta-quest.rules
 sudo udevadm control --reload-rules
 ```
 
@@ -292,7 +294,7 @@ To test tracking without ROS, cameras or robot control:
 
 ```bash
 cd ~/install/pixi_panda_ros2
-pixi run -e jazzy python ~/dev/dual_franka_teleoperation/quest_relay.py --port 8443
+pixi run -e jazzy python ~/dev/dual_franka_teleop/quest_relay.py --port 8443
 ```
 
 Open `http://localhost:8443/` in Quest Browser and start tracking. Add
@@ -330,9 +332,9 @@ workspace; it does not command arm motion.
 
 ```bash
 # Left robot (172.16.0.2 with the default configuration):
-python3 ~/dev/dual_franka_teleoperation/gripper.py --open --action /left/panda_gripper/move
+python3 ~/dev/dual_franka_teleop/gripper.py --open --action /left/panda_gripper/move
 # Right robot (172.16.0.3):
-python3 ~/dev/dual_franka_teleoperation/gripper.py --open --action /right/panda_gripper/move
+python3 ~/dev/dual_franka_teleop/gripper.py --open --action /right/panda_gripper/move
 ```
 
 Replace `--open` with `--close` to request zero finger separation. This uses a
